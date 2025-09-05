@@ -20,28 +20,28 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in store.cart" :key="item.product.id">
-          <td>{{ item.product.name }}</td>
-          <td>{{ item.product.price }} €</td>
+        <tr v-for="item in store.cart" :key="item.id">
+          <td>{{ item.name }}</td>
+          <td>{{ item.price }} €</td>
           <td>
             <v-btn
               icon="mdi-minus"
               size="small"
-              @click="store.updateQuantity(item.product.id, item.quantity - 1)"
+              @click="updateQuantity(item.id, item.quantity - 1)"
             ></v-btn>
             {{ item.quantity }}
             <v-btn
               icon="mdi-plus"
               size="small"
-              @click="store.updateQuantity(item.product.id, item.quantity + 1)"
+              @click="updateQuantity(item.id, item.quantity + 1)"
             ></v-btn>
           </td>
-          <td>{{ (item.product.price * item.quantity).toFixed(2) }} €</td>
+          <td>{{ (item.price * item.quantity).toFixed(2) }} €</td>
           <td>
             <v-btn
               icon="mdi-delete"
               color="error"
-              @click="store.removeFromCart(item.product.id)"
+              @click="store.removeFromCart(item.id)"
             ></v-btn>
           </td>
         </tr>
@@ -84,10 +84,18 @@ const showSuccessDialog = ref(false)
 
 const total = computed(() => {
   return store.cart.reduce(
-    (sum, item) => sum + (item.product.price * item.quantity), 
+    (sum, item) => sum + (item.price * item.quantity), 
     0
   ).toFixed(2)
 })
+
+const updateQuantity = (id: number, quantity: number) => {
+  if (quantity < 1) {
+    store.removeFromCart(id)
+  } else {
+    store.updateQuantity(id, quantity)
+  }
+}
 
 const finishOrder = () => {
   showSuccessDialog.value = true
