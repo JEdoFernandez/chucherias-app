@@ -18,8 +18,11 @@ import Footer from '@/components/Footer.vue'
 </script>
 
 <style>
-/* Estilos globales */
 .v-application {
-  background-color: #f5f5f5 !important;
+  background-color: #f8f9fa !important;
+}
+
+.v-main {
+  min-height: 80vh;
 }
 </style>

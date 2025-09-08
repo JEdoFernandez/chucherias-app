@@ -3,7 +3,7 @@
     <v-container>
       <v-row justify="center">
         <v-col cols="12" class="text-center">
-          <p>© 2024 Tienda de Chucherías - Hecho con Vue y Vuetify</p>
+          <p>© 2025 Tienda de Chucherías - Hecho con Vue y Vuetify</p>
         </v-col>
       </v-row>
     </v-container>

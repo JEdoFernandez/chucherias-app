@@ -24,22 +24,17 @@ export const useProductStore = defineStore('products', () => {
   const products = ref<Product[]>([])
   const cart = ref<CartItem[]>([])
 
-  // Obtener productos desde el backend
+  // Obtener productos
   const fetchProducts = async () => {
     try {
       const response = await axios.get(`${API_URL}/products`)
       products.value = response.data
     } catch (error) {
       console.error('Error fetching products:', error)
-      // Fallback a datos mock si el backend falla
-      products.value = [
-        { id: 1, name: 'Gominolas', price: 1.50, image: 'https://via.placeholder.com/150?text=Gominolas' },
-        { id: 2, name: 'Chocolate', price: 2.00, image: 'https://via.placeholder.com/150?text=Chocolate' }
-      ]
     }
   }
 
-  // Crear producto en el backend
+  // Crear producto
   const createProduct = async (productData: Omit<Product, 'id'>) => {
     try {
       const response = await axios.post(`${API_URL}/products`, productData)
@@ -51,7 +46,7 @@ export const useProductStore = defineStore('products', () => {
     }
   }
 
-  // Eliminar producto del backend
+  // Eliminar producto
   const deleteProduct = async (productId: number) => {
     try {
       await axios.delete(`${API_URL}/products/${productId}`)
@@ -62,7 +57,7 @@ export const useProductStore = defineStore('products', () => {
     }
   }
 
-  // Obtener carrito desde el backend
+  // Obtener carrito
   const fetchCart = async () => {
     try {
       const response = await axios.get(`${API_URL}/cart`)
@@ -72,20 +67,20 @@ export const useProductStore = defineStore('products', () => {
     }
   }
 
-  // Añadir al carrito en el backend
+  // Añadir al carrito
   const addToCart = async (product: Product) => {
     try {
       await axios.post(`${API_URL}/cart`, {
         productId: product.id,
         quantity: 1
       })
-      await fetchCart() // Recargar carrito
+      await fetchCart()
     } catch (error) {
       console.error('Error adding to cart:', error)
     }
   }
 
-  // Eliminar del carrito en el backend
+  // Eliminar del carrito
   const removeFromCart = async (cartItemId: number) => {
     try {
       await axios.delete(`${API_URL}/cart/${cartItemId}`)
@@ -95,7 +90,7 @@ export const useProductStore = defineStore('products', () => {
     }
   }
 
-  // Actualizar cantidad en el backend
+  // Actualizar cantidad
   const updateQuantity = async (cartItemId: number, newQuantity: number) => {
     try {
       await axios.put(`${API_URL}/cart/${cartItemId}`, {
@@ -112,6 +107,24 @@ export const useProductStore = defineStore('products', () => {
     cart.value = []
   }
 
+  // Crear pedido para backend
+  const createOrder = async () => {
+    try {
+      const total = cart.value.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      
+      await axios.post(`${API_URL}/orders`, {
+        items: cart.value,
+        total: total
+      });
+      
+      // Vaciar carrito en el backend y frontend
+      await fetchCart(); // Esto recargará el carrito vacío desde el backend
+      return true;
+    } catch (error) {
+      console.error('Error creating order:', error);
+      return false;
+    }
+  }
   // Cargar datos iniciales
   fetchProducts()
   fetchCart()
@@ -126,6 +139,7 @@ export const useProductStore = defineStore('products', () => {
     removeFromCart, 
     updateQuantity,
     clearCart,
-    fetchCart
+    fetchCart,
+    createOrder
   }
 })

@@ -58,6 +58,7 @@
         size="x-large"
         block
         @click="finishOrder"
+        :loading="loading"
       >
         Finalizar compra
       </v-btn>
@@ -66,7 +67,9 @@
     <v-dialog v-model="showSuccessDialog" max-width="400">
       <v-card>
         <v-card-title class="text-h5">¡Pedido registrado!</v-card-title>
-        <v-card-text>Tu pedido ha sido procesado correctamente.</v-card-text>
+        <v-card-text>
+          <p>Tu pedido ha sido procesado correctamente.</p>
+        </v-card-text>
         <v-card-actions>
           <v-btn color="primary" block @click="showSuccessDialog = false">Aceptar</v-btn>
         </v-card-actions>
@@ -81,6 +84,7 @@ import { useProductStore } from '@/stores/productStore'
 
 const store = useProductStore()
 const showSuccessDialog = ref(false)
+const loading = ref(false)
 
 const total = computed(() => {
   return store.cart.reduce(
@@ -97,8 +101,20 @@ const updateQuantity = (id: number, quantity: number) => {
   }
 }
 
-const finishOrder = () => {
-  showSuccessDialog.value = true
-  store.clearCart()
+const finishOrder = async () => {
+  loading.value = true
+  try {
+    const success = await store.createOrder()
+    if (success) {
+      showSuccessDialog.value = true
+    } else {
+      alert('Error al procesar el pedido')
+    }
+  } catch (error) {
+    console.error('Error finishing order:', error)
+    alert('Error al procesar el pedido')
+  } finally {
+    loading.value = false
+  }
 }
 </script>
